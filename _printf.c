@@ -1,19 +1,15 @@
 #include "main.h"
 #include <stdarg.h>
-
 /**
  * _printf - custom printf implementation
  * @format: The format string
- *
  * This function emulates a simplified version of the printf function,
  * supporting the following format specifiers: 'c', 's', and '%'.
  *
  * Auth: Kennedy Gichuru
  *	Winnie Kiarago
-
  * Return: The number of characters printed
  */
-
 int _printf(const char *format, ...)
 {
 	int i;
@@ -22,43 +18,43 @@ int _printf(const char *format, ...)
 
 	va_start(args, format);
 
-	    while (*format)
-    {
-        if (*format == '%')
-        {
-            format++; // Move past '%'
-            switch (*format)
-            {
-                case 'c':
-                    printed_chars += write(1, &va_arg(args, int), 1);
-                    break;
-                case 's':
-                {
-                    char *str = va_arg(args, char *);
-                    while (*str)
-                    {
-                        printed_chars += write(1, str, 1);
-                        str++;
-                    }
-                    break;
-                }
-                case '%':
-                    printed_chars += write(1, "%", 1);
-                    break;
-                default:
-                    printed_chars += write(1, &format[-1], 1);
-                    printed_chars += write(1, format, 1);
-                    break;
-            }
-        }
-        else
-        {
-            printed_chars += write(1, format, 1);
-        }
-        format++;
-    }
+	while (*format)
+	{
+		if (*format != '%')
+		{
+			write(1, format, 1);
+			printed_chars++;
+		}
+		else
+		{
+			format++;
+			if (*format == '\0')
+				break;
+		}
+		if (*format == '%')
+		{
+			write(1, format, 1);
+			printed_chars++;
+		}
+		else if (*format == 'c')
+		{
+			char ch = va_arg(args, int);
 
-    va_end(args);
+			write(1, &ch, 1);
+			printed_chars++;
+		}
+		else if (*format == 's')
+		{
+			char *str = va_arg(args, char*);
+			int strlen = 0;
 
-    return printed_chars;
+			while (str[strlen] != '\0')
+				strlen++;
+			write(1, str, strlen);
+			printed_chars += strlen;
+		}
+		format++;
+	}
+	va_end(args);
+	return (printed_chars);
 }
